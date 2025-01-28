@@ -1,0 +1,35 @@
+package org.example;
+
+import java.io.*;
+import java.net.*;
+
+public class Cliente {
+    public static void main(String[] args) {
+        try (Socket socket = new Socket("localhost", 12345)) {
+            DataInputStream leer = new DataInputStream(socket.getInputStream());
+            DataOutputStream escribir = new DataOutputStream(socket.getOutputStream());
+            BufferedReader consola = new BufferedReader(new InputStreamReader(System.in));
+
+            String mensaje, respuesta;
+
+            while (true) {
+                System.out.print("Escribe un mensaje: ");
+                mensaje = consola.readLine();
+                escribir.writeUTF(mensaje);
+
+                respuesta = leer.readUTF();
+                System.out.println("Servidor: " + respuesta);
+
+                if (respuesta.contains("Por eso vete")) {
+                    break;
+                }
+            }
+
+            System.out.println("Conexión cerrada.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+

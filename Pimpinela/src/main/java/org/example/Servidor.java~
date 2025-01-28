@@ -1,0 +1,63 @@
+package org.example;
+
+import java.io.*;
+import java.net.*;
+
+public class Servidor {
+    public static void main(String[] args) {
+        Socket conexion = null;
+        DataInputStream leer;
+        DataOutputStream escribir;
+
+        int PUERTO = 12345;
+
+        try (ServerSocket servidorSocket = new ServerSocket(PUERTO)) {
+            System.out.println("Servidor iniciado. Esperando conexión...");
+            conexion = servidorSocket.accept();
+            System.out.println("Cliente conectado.");
+
+            leer = new DataInputStream(conexion.getInputStream());
+            escribir = new DataOutputStream(conexion.getOutputStream());
+
+            String mensaje;
+            while (true) {
+                mensaje = leer.readUTF();
+                System.out.println("Cliente: " + mensaje);
+
+
+                if ("¿Quién es?".equals(mensaje)) {
+                    escribir.writeUTF("Soy yo");
+                    mensaje = leer.readUTF();
+
+                    if ("¿Qué vienes a buscar?".equals(mensaje)) {
+                        escribir.writeUTF("A ti");
+                        mensaje = leer.readUTF();
+
+                        if ("Ya es tarde".equals(mensaje)) {
+                            escribir.writeUTF("¿Por qué?");
+                            mensaje = leer.readUTF();
+
+                            if ("Porque ahora soy yo la que quiere estar sin ti".equals(mensaje)) {
+                                escribir.writeUTF("Por eso vete, olvida mi nombre, mi cara, mi casa y pega la vuelta");
+                                break;
+                            } else {
+                                escribir.writeUTF("Error");
+                            }
+                        } else {
+                            escribir.writeUTF("Error");
+                        }
+                    } else {
+                        escribir.writeUTF("Error");
+                    }
+                } else {
+                    escribir.writeUTF("Error");
+                }
+            }
+
+            System.out.println("Cerrando conexión...");
+            conexion.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
